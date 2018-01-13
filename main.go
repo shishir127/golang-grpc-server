@@ -16,7 +16,11 @@ const (
 type server struct{}
 
 func (s *server) SayHello(request *spike.HelloRequest, stream spike.Streamer_SayHelloServer) error {
-	stream.Send(&spike.HelloReply{Message: "Hello " + request.Name})
+	err := stream.Send(&spike.HelloReply{Message: "Hello " + request.Name})
+	if err != nil {
+		fmt.Println("Error in sending stream")
+		fmt.Println(err)
+	}
 	return nil
 }
 
