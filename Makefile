@@ -1,2 +1,2 @@
 grpc:
-	protoc --proto_path=. --go_out=plugins=grpc:. spike.proto
+	protoc --go_out=plugins=grpc:. spike/spike.proto

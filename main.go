@@ -1,13 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net"
 
-	"golang.org/x/net/context"
+	"github.com/shishir127/golang-grpc-server/spike"
 	"google.golang.org/grpc"
-	pb "google.golang.org/grpc/examples/helloworld/helloworld"
-	"google.golang.org/grpc/reflection"
 )
 
 const (
@@ -16,8 +15,9 @@ const (
 
 type server struct{}
 
-func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest, stream.) error {
-	return &pb.HelloReply{Message: "Hello " + in.Name}, nil
+func (s *server) SayHello(request *spike.HelloRequest, stream spike.Streamer_SayHelloServer) error {
+	stream.Send(&spike.HelloReply{Message: "Hello " + request.Name})
+	return nil
 }
 
 func main() {
@@ -26,9 +26,8 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 	s := grpc.NewServer()
-	pb.RegisterGreeterServer(s, &server{})
-	// Register reflection service on gRPC server.
-	reflection.Register(s)
+	spike.RegisterStreamerServer(s, &server{})
+	fmt.Println("Starting server")
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
