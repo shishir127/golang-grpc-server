@@ -4,14 +4,11 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"os"
 	"time"
 
 	"github.com/shishir127/golang-grpc-server/spike"
 	"google.golang.org/grpc"
-)
-
-const (
-	port = ":50051"
 )
 
 type server struct{}
@@ -32,7 +29,8 @@ func (s *server) SayHello(request *spike.HelloRequest, stream spike.Streamer_Say
 }
 
 func main() {
-	lis, err := net.Listen("tcp", port)
+	port := os.Getenv("PORT")
+	lis, err := net.Listen("tcp", ":"+port)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
