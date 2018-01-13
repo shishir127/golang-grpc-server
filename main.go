@@ -17,6 +17,7 @@ const (
 type server struct{}
 
 func (s *server) SayHello(request *spike.HelloRequest, stream spike.Streamer_SayHelloServer) error {
+	fmt.Println("Starting to say hello")
 	for i := 0; i < 10; i++ {
 		err := stream.Send(&spike.HelloReply{Message: "Hello " + request.Name})
 		if err != nil {
@@ -26,6 +27,7 @@ func (s *server) SayHello(request *spike.HelloRequest, stream spike.Streamer_Say
 		}
 		time.Sleep(time.Duration(1) * time.Second)
 	}
+	fmt.Println("Done saying hello")
 	return nil
 }
 
