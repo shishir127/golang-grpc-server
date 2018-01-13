@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"time"
 
 	"github.com/shishir127/golang-grpc-server/spike"
 	"google.golang.org/grpc"
@@ -16,10 +17,14 @@ const (
 type server struct{}
 
 func (s *server) SayHello(request *spike.HelloRequest, stream spike.Streamer_SayHelloServer) error {
-	err := stream.Send(&spike.HelloReply{Message: "Hello " + request.Name})
-	if err != nil {
-		fmt.Println("Error in sending stream")
-		fmt.Println(err)
+	for i := 0; i < 10; i++ {
+		err := stream.Send(&spike.HelloReply{Message: "Hello " + request.Name})
+		if err != nil {
+			fmt.Println("Error in sending stream")
+			fmt.Println(err)
+			return err
+		}
+		time.Sleep(time.Duration(1) * time.Second)
 	}
 	return nil
 }
