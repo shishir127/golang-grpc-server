@@ -9,12 +9,25 @@ import (
 
 	"github.com/shishir127/golang-grpc-server/spike"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 )
 
 type server struct{}
 
 func (s *server) SayHello(request *spike.HelloRequest, stream spike.Streamer_SayHelloServer) error {
 	fmt.Println("Starting to say hello")
+	md, ok := metadata.FromIncomingContext(stream.Context())
+	if !ok {
+		fmt.Println("Error in retrieving stream metadata")
+		stream.Send(&spike.HelloReply{Message: "Server error"})
+		return nil
+	}
+	accessToken := md["authorization"][0]
+	if "" == accessToken || accessToken != "test" {
+		fmt.Println("Authorization failed")
+		stream.Send(&spike.HelloReply{Message: fmt.Sprintf("Sorry %s, you are not authorized", request.Name)})
+		return nil
+	}
 	for i := 0; i < 10; i++ {
 		err := stream.Send(&spike.HelloReply{Message: "Hello " + request.Name})
 		if err != nil {
